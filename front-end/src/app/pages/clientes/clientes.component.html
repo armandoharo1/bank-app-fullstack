@@ -1,0 +1,139 @@
+<div class="page">
+  <div class="header">
+    <h1>Clientes</h1>
+
+    <div class="actions">
+      <input
+        class="search"
+        placeholder="Buscar"
+        (input)="onSearch($event)"
+      />
+      <button type="button" class="btn-primary" (click)="onNuevo()">
+        Nuevo
+      </button>
+    </div>
+  </div>
+
+  <table class="table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Nombre</th>
+        <th>Identificación</th>
+        <th>Teléfono</th>
+        <th>Estado</th>
+        <th class="col-actions">Acciones</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let row of filtered">
+        <td>{{ row.personaId }}</td>
+        <td>{{ row.nombre }}</td>
+        <td>{{ row.identificacion }}</td>
+        <td>{{ row.telefono }}</td>
+        <td>{{ row.estado ? 'Activo' : 'Inactivo' }}</td>
+        <td>
+          <button type="button" class="link" (click)="onEditar(row)">
+            Editar
+          </button>
+          <button type="button" class="link danger" (click)="eliminar(row)">
+            Eliminar
+          </button>
+        </td>
+      </tr>
+
+      <tr *ngIf="filtered.length === 0">
+        <td colspan="6" class="empty">
+          No hay clientes para mostrar
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- defincion del modal -->
+<div class="overlay" *ngIf="showForm">
+  <div class="modal">
+    <h3>
+      {{ mode === 'create' ? 'Nuevo Cliente' : 'Editar Cliente' }}
+    </h3>
+
+    <form [formGroup]="form" (ngSubmit)="guardar()">
+
+      <label>Nombre</label>
+      <input formControlName="nombre" />
+      <small *ngIf="form.get('nombre')?.touched && form.get('nombre')?.invalid">
+        Nombre es requerido
+      </small>
+
+      <label>Género</label>
+      <select formControlName="genero">
+        <option value="M">M</option>
+        <option value="F">F</option>
+      </select>
+
+      <label>Edad</label>
+      <input type="number" formControlName="edad" />
+      <small *ngIf="form.get('edad')?.touched && form.get('edad')?.invalid">
+        Edad inválida
+      </small>
+
+      <label>Identificación</label>
+      <input formControlName="identificacion" />
+      <small *ngIf="form.get('identificacion')?.touched && form.get('identificacion')?.invalid">
+        Identificación requerida
+      </small>
+
+      <label>Dirección</label>
+      <input formControlName="direccion" />
+      <small *ngIf="form.get('direccion')?.touched && form.get('direccion')?.invalid">
+        Dirección requerida
+      </small>
+
+      <label>Teléfono</label>
+      <input formControlName="telefono" />
+      <small *ngIf="form.get('telefono')?.touched && form.get('telefono')?.invalid">
+        Teléfono requerido
+      </small>
+
+      <label>ClientKey</label>
+      <input formControlName="clientKey" />
+      <small *ngIf="form.get('clientKey')?.touched && form.get('clientKey')?.invalid">
+        ClientKey requerido
+      </small>
+
+      <ng-container *ngIf="mode === 'create'">
+        <label>Password</label>
+        <input type="password" formControlName="password" />
+        <small *ngIf="form.get('password')?.touched && form.get('password')?.invalid">
+          Password requerido
+        </small>
+      </ng-container>
+
+      <label>Estado</label>
+      <select formControlName="estado">
+        <option [ngValue]="true">Activo</option>
+        <option [ngValue]="false">Inactivo</option>
+      </select>
+
+      <div class="modal-actions">
+        <button
+          type="button"
+          class="btn-secondary"
+          (click)="cerrarForm()"
+        >
+          Cancelar
+        </button>
+
+        <button
+          type="submit"
+          class="btn-primary"
+        >
+          Guardar
+        </button>
+      </div>
+
+    </form>
+  </div>
+</div>

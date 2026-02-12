@@ -1,0 +1,87 @@
+<div class="page">
+  <div class="header">
+    <h1>Reportes</h1>
+
+    <div class="actions">
+      <form class="filters" [formGroup]="form">
+        <select class="select" formControlName="clienteId">
+          <option [ngValue]="null">Seleccione cliente</option>
+          <option *ngFor="let c of clientes" [ngValue]="c.personaId">
+            {{ c.personaId }} - {{ c.nombre }}
+          </option>
+        </select>
+
+        <input class="date" type="date" formControlName="fechaInicio" />
+        <input class="date" type="date" formControlName="fechaFin" />
+
+        <button type="button" class="btn-primary" (click)="consultar()" [disabled]="loading">
+          Consultar
+        </button>
+
+        <button type="button" class="btn-secondary" (click)="descargarPdf()" [disabled]="loading">
+          Descargar PDF
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <div class="hint" *ngIf="loading">Cargando...</div>
+
+  <div class="error" *ngIf="errorMsg">{{ errorMsg }}</div>
+
+  <div *ngIf="reporte as rep">
+    <div class="summary">
+      <div class="card">
+        <div class="label">Cliente ID</div>
+        <div class="value">{{ rep.clienteId }}</div>
+      </div>
+
+      <div class="card">
+        <div class="label">Rango</div>
+        <div class="value">{{ rep.fechaInicio }} → {{ rep.fechaFin }}</div>
+      </div>
+
+      <div class="card">
+        <div class="label">Total Créditos</div>
+        <div class="value">{{ fmtMoney(rep.totalCreditos) }}</div>
+      </div>
+
+      <div class="card">
+        <div class="label">Total Débitos</div>
+        <div class="value">{{ fmtMoney(rep.totalDebitos) }}</div>
+      </div>
+    </div>
+
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Fecha</th>
+          <th>Cliente</th>
+          <th>Cuenta</th>
+          <th>Tipo</th>
+          <th>Saldo Inicial</th>
+          <th>Estado</th>
+          <th>Movimiento</th>
+          <th>Saldo Disponible</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let m of rep.movimientos">
+          <td>{{ m.fecha }}</td>
+          <td>{{ m.cliente }}</td>
+          <td>{{ m.numeroCuenta }}</td>
+          <td>{{ m.tipo }}</td>
+          <td>{{ fmtMoney(m.saldoInicial) }}</td>
+          <td>{{ m.estado ? 'Activo' : 'Inactivo' }}</td>
+          <td>{{ fmtMoney(m.movimiento) }}</td>
+          <td>{{ fmtMoney(m.saldoDisponible) }}</td>
+        </tr>
+
+        <tr *ngIf="rep.movimientos.length === 0">
+          <td colspan="8" class="empty">No hay datos en el rango seleccionado</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

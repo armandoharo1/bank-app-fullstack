@@ -1,0 +1,97 @@
+<div class="page">
+  <div class="header">
+    <h1>Cuentas</h1>
+
+    <div class="actions">
+      <!-- aqui se filtra por cliente -->
+      <select class="select" (change)="onFilterCliente($event)">
+        <option value="">Todos los clientes</option>
+        <option *ngFor="let c of clientes" [value]="c.personaId">
+          {{ c.personaId }} - {{ c.nombre }}
+        </option>
+      </select>
+
+      <input class="search" placeholder="Buscar" (input)="onSearch($event)" />
+      <button type="button" class="btn-primary" (click)="onNuevo()">Nuevo</button>
+    </div>
+  </div>
+
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Número</th>
+        <th>Tipo</th>
+        <th>Saldo Inicial</th>
+        <th>Cliente</th>
+        <th>Estado</th>
+        <th class="col-actions">Acciones</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let row of filtered">
+        <td>{{ row.numeroCuenta }}</td>
+        <td>{{ row.tipoCuenta }}</td>
+        <td>{{ row.saldoInicial }}</td>
+        <td>{{ clienteNombre(row.clienteId) }}</td>
+        <td>{{ row.estado ? 'Activo' : 'Inactivo' }}</td>
+        <td>
+          <button type="button" class="link" (click)="onEditar(row)">Editar</button>
+          <button type="button" class="link danger" (click)="eliminar(row)">Eliminar</button>
+        </td>
+      </tr>
+
+      <tr *ngIf="filtered.length === 0">
+        <td colspan="6" class="empty">No hay cuentas para mostrar</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- el modal -->
+<div class="overlay" *ngIf="showForm">
+  <div class="modal">
+    <h3>{{ mode === 'create' ? 'Nueva Cuenta' : 'Editar Cuenta' }}</h3>
+
+    <form [formGroup]="form" (ngSubmit)="guardar()">
+      <label>Número de Cuenta</label>
+      <input formControlName="numeroCuenta" />
+      <small *ngIf="form.get('numeroCuenta')?.touched && form.get('numeroCuenta')?.invalid">
+        Número requerido
+      </small>
+
+      <label>Tipo de Cuenta</label>
+      <select formControlName="tipoCuenta">
+        <option *ngFor="let t of tipos" [value]="t">{{ t }}</option>
+      </select>
+
+      <label>Saldo Inicial</label>
+      <input type="number" formControlName="saldoInicial" />
+      <small *ngIf="form.get('saldoInicial')?.touched && form.get('saldoInicial')?.invalid">
+        Saldo inválido
+      </small>
+
+      <label>Cliente</label>
+      <select formControlName="clienteId">
+        <option [ngValue]="null">Seleccione cliente</option>
+        <option *ngFor="let c of clientes" [ngValue]="c.personaId">
+          {{ c.personaId }} - {{ c.nombre }}
+        </option>
+      </select>
+      <small *ngIf="form.get('clienteId')?.touched && form.get('clienteId')?.invalid">
+        Cliente requerido
+      </small>
+
+      <label>Estado</label>
+      <select formControlName="estado">
+        <option [ngValue]="true">Activo</option>
+        <option [ngValue]="false">Inactivo</option>
+      </select>
+
+      <div class="modal-actions">
+        <button type="button" class="btn-secondary" (click)="cerrarForm()">Cancelar</button>
+        <button type="submit" class="btn-primary">Guardar</button>
+      </div>
+    </form>
+  </div>
+</div>

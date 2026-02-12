@@ -1,0 +1,142 @@
+<div class="page">
+  <div class="header">
+    <h1>Movimientos</h1>
+
+    <div class="actions">
+      <select class="select" (change)="onSelectCuenta($event)">
+        <option value="" [selected]="!selectedCuenta">
+          Seleccione cuenta
+        </option>
+        <option
+          *ngFor="let c of cuentas"
+          [value]="c.numeroCuenta"
+          [selected]="c.numeroCuenta === selectedCuenta"
+        >
+          {{ c.numeroCuenta }} ({{ c.tipoCuenta }})
+        </option>
+      </select>
+
+      <input
+        class="search"
+        placeholder="Buscar"
+        (input)="onSearch($event)"
+      />
+
+      <button
+        type="button"
+        class="btn-primary"
+        (click)="onNuevo()"
+      >
+        Nuevo
+      </button>
+    </div>
+  </div>
+
+  <!-- tabla -->
+  <table class="table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Fecha</th>
+        <th>Tipo</th>
+        <th>Valor</th>
+        <th>Saldo</th>
+        <th class="col-actions">Acciones</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let row of filtered">
+        <td>{{ row.movimientoId }}</td>
+        <td>{{ fmtFecha(row.fecha) }}</td>
+        <td>{{ row.tipoMovimiento }}</td>
+        <td>{{ row.valor }}</td>
+        <td>{{ row.saldo }}</td>
+        <td>
+          <button
+            type="button"
+            class="link"
+            (click)="onEditar(row)"
+          >
+            Editar
+          </button>
+
+          <button
+            type="button"
+            class="link danger"
+            (click)="eliminar(row)"
+          >
+            Eliminar
+          </button>
+        </td>
+      </tr>
+
+      <tr *ngIf="filtered.length === 0">
+        <td colspan="6" class="empty">
+          No hay movimientos para mostrar
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- modal -->
+<div class="overlay" *ngIf="showForm">
+  <div class="modal">
+    <h3>
+      {{ mode === 'create' ? 'Nuevo Movimiento' : 'Editar Movimiento' }}
+    </h3>
+
+    <form [formGroup]="form">
+
+      <!-- echa, solo edit -->
+      <ng-container *ngIf="mode === 'edit'">
+        <label>Fecha</label>
+        <input type="date" formControlName="fecha" />
+        <small *ngIf="form.get('fecha')?.touched && form.get('fecha')?.invalid">
+          Fecha requerida
+        </small>
+      </ng-container>
+
+      <label>Cuenta</label>
+      <input formControlName="numeroCuenta" />
+
+      <label>Tipo Movimiento</label>
+      <select formControlName="tipoMovimiento">
+        <option *ngFor="let t of tipos" [value]="t">
+          {{ t }}
+        </option>
+      </select>
+
+      <label>Valor</label>
+      <input type="number" formControlName="valor" />
+      <small *ngIf="form.get('valor')?.touched && form.get('valor')?.invalid">
+        Valor debe ser mayor a 0
+      </small>
+
+      <!-- validacin -->
+      <small *ngIf="form.invalid && form.touched">
+        Hay campos inválidos.
+      </small>
+
+
+      <div class="modal-actions">
+        <button
+          type="button"
+          class="btn-secondary"
+          (click)="cerrarForm()"
+        >
+          Cancelar
+        </button>
+
+        <button
+          type="button"
+          class="btn-primary"
+          (click)="guardar()"
+        >
+          Guardar
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
