@@ -1,232 +1,210 @@
-# 🏦 Devsu Bank - FrontEnd
+# 🏦 Devsu Bank – FullStack Application
+## Spring Boot (Java 17) + Angular 17
 
-Aplicación frontEnd desarrollada en Angular 17 utilizando Standalone Components y Lazy Loading, como parte de una arquitectura FullStack basada en Spring Boot (Java 17) y Angular.
+Aplicación bancaria FullStack compuesta por:
 
-El proyecto implementa una estructura modular por capas, consumo de APIs REST mediante HttpClient, formularios reactivos con validaciones, manejo de errores HTTP y generación de reportes con descarga de PDF, siguiendo principios de Clean Code y Separation of Concerns
+- Backend API REST (Spring Boot + PostgreSQL + Docker)
+- Frontend SPA (Angular 17 Standalone + Lazy Loading)
 
-Permite la gestión completa de:
+Permite la gestión integral de:
 
 - 👤 Clientes
 - 💳 Cuentas
-- 💰 Movimientos
-- 📊 Reporte de Estado de Cuenta (incluye descarga PDF)
+- 💰 Movimientos (Crédito / Débito)
+- 📊 Reporte de Estado de Cuenta (JSON + PDF descargable)
 
----
+# 🧱 Arquitectura General del Sistema
+### 🔷 Diagrama End-to-End
+```
+                     ┌─────────────────────────────┐
+                     │        Usuario / Browser     │
+                     └──────────────┬──────────────┘
+                                    │
+                                    ▼
+                     ┌─────────────────────────────┐
+                     │     Angular 17 Frontend     │
+                     │  (Standalone + Lazy Load)   │
+                     └──────────────┬──────────────┘
+                                    │
+                           HttpClient (/api)
+                                    │
+                                    ▼
+                     ┌─────────────────────────────┐
+                     │        Proxy Angular        │
+                     │      proxy.conf.json        │
+                     └──────────────┬──────────────┘
+                                    │
+                                    ▼
+                     ┌─────────────────────────────┐
+                     │    Spring Boot REST API     │
+                     │  Controllers → Services     │
+                     │  → Repositories             │
+                     └──────────────┬──────────────┘
+                                    │
+                                    ▼
+                     ┌─────────────────────────────┐
+                     │        PostgreSQL DB        │
+                     └─────────────────────────────┘
+```
+# 📦 Estructura del Repositorio
 
-# 🚀 Stack Tecnológico
+```
+devsu-bank-fullstack/
+│
+├── bank-backend/        → Proyecto Spring Boot
+│   └── README.md
+│
+├── front-end/           → Proyecto Angular 17
+│   └── README.md
+│
+└── README.md            → (Este documento principal)
+```
 
-- Angular 17 (Standalone + Lazy Loading)
-- TypeScript
+# 🚀 Stack Tecnológico Completo
+## 🔹 Backend
+
+- Java 17
+- Spring Boot 3.5.x
+- Spring Data JPA (Hibernate)
+- Bean Validation (Jakarta)
+- PostgreSQL 16
+- Docker & Docker Compose
+- JUnit 5 + MockMvc
+- Maven
+
+## 🔹 Frontend
+
+- Angular 17
 - Standalone Components
-- Lazy Loading con `loadComponent()`
+- Lazy Loading con loadComponent()
 - Reactive Forms
 - HttpClient
+- Jest (Testing)
 - CSS puro (sin frameworks UI)
-- Proxy para integración backend
-- Arquitectura modular por capas
 
----
-
-# 📦 Arquitectura
-
-El proyecto sigue una separación  por capas:
-```text
-src/app/
-├── core/
-│ ├── models/
-│ ├── services/
-│
-├── pages/
-│ ├── clientes/
-│ ├── cuentas/
-│ ├── movimientos/
-│ ├── reportes/
-│
-├── layout/
-│
-├── app.routes.ts
-```
-
-# Diagrama de Arquitectura  FrontEnd
-```bash
-🌐 Usuario / Browser
-      │
-      ▼
-🚀 [Angular Router] ---- (Gestión de rutas)
-      │
-      ▼
-🖼️ [LayoutComponent] --- (Sidebar, Navbar, Footer)
-      │
-      ▼
-📂 [Pages] (Lazy Loading activado ⚡)
-      ├── 👥 Clientes
-      ├── 💰 Cuentas
-      ├── 💸 Movimientos
-      └── 📊 Reportes
-      │
-      ▼
-⚙️ [Core Layer]
-      ├── 📡 Services (HttpClient / API Calls)
-      └── 📄 Models (Interfaces & DTOs)
-      │
-      ▼
-🔗 [Proxy Configuration] (proxy.conf.json)
-      │
-      ▼
-🍃 [Spring Boot API] (RESTful Backend)
+# 🧠 Arquitectura Backend
 
 ```
+Controller
+   ↓
+Service (Reglas de negocio)
+   ↓
+Repository (JPA)
+   ↓
+PostgreSQL
+```
+Incluye:
 
+- Strategy Pattern (Crédito / Débito)
+- BusinessException
+- GlobalExceptionHandler
+- Generación de PDF (ReportePdfGenerator)
+- Dockerización completa
 
-# Principios aplicados
+📄 Documentación detallada:
+
+````
+ 👉 Ver bank-backend/README.md
+ ````
+# 🖥 Arquitectura Frontend
+Arquitectura modular con separación por capas:
+````
+Angular Router
+    ↓
+LayoutComponent
+    ↓
+Pages (Lazy Loaded)
+    ├── Clientes
+    ├── Cuentas
+    ├── Movimientos
+    └── Reportes
+    ↓
+Core Layer
+    ├── Services (API Calls)
+    └── Models (DTO Interfaces)
+
+````
+
+- Consumo de endpoints REST
+- Manejo de errores 400
+- Normalización de LocalDate
+- Conversión Base64 → Blob para PDF
+
+📄 Documentación detallada:
+````
+👉 Ver front-end/README.md
+````
+# ⚙️ Ejecución del Proyecto
+🔹 Opción Recomendada (Docker Backend + Angular local)
+## 1️⃣ Levantar Backend
 ```bash
-✔ Clean Code  
-✔ Single Responsibility  
-✔ Separation of Concerns  
-✔ Lazy Loading  
-✔ Standalone Components  
-✔ Validaciones reactivas  
-✔ Manejo de errores HTTP 
+cd bank-backend
+docker compose up -d --build
+```
+Backend disponible en:
+```bash
+http://localhost:8080
 ```
 
-#  Configuración y Ejecución
-
-## 1️⃣ Instalar dependencias
-
+## 2️⃣ Ejecutar Frontend
 ```bash
+cd front-end
 npm install
-```
-
-## 2️⃣ Ejecutar aplicación
-
-```bash
 npm start
 ```
-La aplicación estará disponible en:
-
-``` link
+Frontend disponible en:
+```bash
 http://localhost:4200
 ```
-⚠️ El backend debe estar ejecutándose en:
-```
- http://localhost:8080
-```
-El proxy /api está configurado en proxy.conf.json.
+# 📊 Funcionalidades Implementadas
 
+| Módulo | Estado | |
+| :--- | :---: | :--- |
+| **CRUD Clientes** | ✅ |  |
+| **CRUD Cuentas** | ✅ |  |
+| **CRUD Movimientos** | ✅ | |
+| **Reporte JSON** | ✅ |  |
+| **Reporte PDF** | ✅ | |
+| **Validaciones Backend** | ✅ | |
+| **Tests Backend** | ✅ | |
+| **Tests Frontend** | ✅ | |
+| **Docker Backend** | ✅ | |
+---
 
-## 2️⃣ Ejecutar los Test
-
+# 🧪 Testing
+## Backend
 ```bash
-npm start
-npm run test:coverage
-```
-# 📡 Endpoints Consumidos
-```
+./mvnw test
+````
+## Frontend
+```bash
+npm test
+````
+Todos los test unitarios pasan correctamente.
 
-| Módulo       | Método | Endpoint                               |
-| ------------ | ------ | -------------------------------------- |
-| Clientes     | GET    | /api/clientes                          |
-| Clientes     | POST   | /api/clientes                          |
-| Clientes     | PUT    | /api/clientes/{id}                     |
-| Clientes     | DELETE | /api/clientes/{id}                     |
-| Cuentas      | GET    | /api/cuentas                           |
-| Cuentas      | POST   | /api/cuentas                           |
-| Cuentas      | PUT    | /api/cuentas/{id}                      |
-| Cuentas      | DELETE | /api/cuentas/{id}                      |
-| Movimientos  | GET    | /api/movimientos/cuenta/{numeroCuenta} |
-| Movimientos  | POST   | /api/movimientos                       |
-| Movimientos  | PUT    | /api/movimientos/{id}                  |
-| Movimientos  | DELETE | /api/movimientos/{id}                  |
-| Reportes     | GET    | /api/clientes/{clienteId}/reportes     |
-| Reportes PDF | GET    | /api/clientes/{clienteId}/reportes/pdf |
-```
+# 🔐 Reglas de Negocio Clave
+- Créditos → valores positivos
+- Débitos → valores negativos
+- Control de saldo disponible
+- Límite diario configurable
+- Validaciones con @Valid
+- Manejo estructurado de errores
 
+# 📸 Evidencias
+Las capturas del frontend se encuentran en:
+````
+front-end/docs/screenshots/
+````
 
-# 🧪 Funcionalidades Implementadas
-👤 Clientes
-- Listado
-- Búsqueda rápida
-- Crear
-- Editar
-- Eliminar
-- Validaciones visuales
-- Manejo de errores backend
-
-💳 Cuentas
-
-- Listado
-- Búsqueda rápida
-- Crear cuenta
-- Editar cuenta
-- Eliminar cuenta
-
-💰 Movimientos
-
-- Filtrado por cuenta
-- Crear movimiento (CREDITO | DEBITO)
-- Edición con validación de fecha (requerida por backend)
-- Manejo correcto de valores BigDecimal
-- Normalización de LocalDate
-- Manejo de 400 Bad Request
-- Eliminación
-
-
-
-📊 Reporte Estado de Cuenta
-
-- Filtro por cliente
-- Rango de fechas
-- Totales calculados (Créditos y Débitos)
-- Visualización en tabla
-- Descarga PDF (Base64 > Blob > archivo descargable)
-
-
-
-## 📸 Capturas de Pantalla
-
-![Dashboard](./docs/screenshots/CRUD_Clientes.png) 
-![Dashboard](./docs/screenshots/CRUD_Cuentas.png) 
-![Dashboard](./docs/screenshots/CRUD_Movimientos.png) 
-![Dashboard](./docs/screenshots/Reportes.png) 
-
-
-# 🧠 Decisiones Técnicas
-- Se utilizó arquitectura standalone para reducir boilerplate.
-- Se implementó Lazy Loading por página.
-- Se manejaron errores 400 provenientes del backend.
-- Se respetaron los DTO del backend (BigDecimal, LocalDate).
-- Se implementó descarga segura de PDF desde base64.
-- No se utilizaron frameworks de estilos
-
-# 🔐 Validaciones
-- Formularios con ReactiveForms.
-- Validación de rango de fechas.
-- Validación de valor mínimo en movimientos.
-- Manejo de errores de negocio enviados por backend.
-
-# 📌 Consideraciones
-- El backend debe estar levantado previamente.
-- Se recomienda usar Node 18+.
-
-# 🏁 Estado del Proyecto
-✔ Implementación completa
-
-✔ CRUD funcional en todas las entidades
-
-✔ Reporte con generación PDF
-
-✔ Código limpio y estructurado
-
-# Mejoras Futuras
-- Unit Testing (Jest / Karma)
-- Manejo global de errores con interceptor
-- Guards de autenticación
-- Paginación en tablas
-- Filtros avanzados
-- Exportación CSV
-- Dckerización del frontend
-
-
+# 📌 Entregables Cumplidos
+- Repositorio público en GitHub
+- Backend dockerizado
+- Base de datos PostgreSQL
+- Frontend Angular sin frameworks UI
+- Tests unitarios backend y frontend
+- Reporte PDF
+- Arquitectura por capas
+- Documentación técnica
 
 # ✍️ Autor
 
